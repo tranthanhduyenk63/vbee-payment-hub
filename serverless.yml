@@ -1,0 +1,579 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: aws-payment
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+# custom:
+#   defaultStage: dev
+#   environment: ${file(env.yml):${self:provider.stage}, file(env.yml):default}
+provider:
+  name: aws
+  runtime: nodejs16.x
+  deploymentBucket: payment-deploy-bucket
+  region: ap-southeast-1
+  stage: ${opt:stage}
+  timeout: 90
+  stackTags:
+    VProduct: "payment-hub"
+    VProject: "payment-hub"
+    VService: "payment-hub"
+    VFuntions: "payment-hub"
+  vpc:
+    securityGroupIds:
+      - sg-0583a5f382111164f
+    subnetIds:
+      - subnet-013d2db9cb480b41e
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 'logs:CreateLogStream'
+        - 'logs:CreateLogGroup'
+        - 'logs:PutLogEvents'
+      Resource: ['*']
+  # you can overwrite defaults here Y7c27oYeLPZ3WlSX
+  #có thể truyền vào 2 cách là sử dụng dạng file env hoặc là truyền dạng opt đều được
+  environment:
+    SLS_DEBUG: '*'
+    MONGO_URI: ${opt:mongo}
+    IAM_VALID_CLIENT_IDS: ${opt:IAM_VALID_CLIENT_IDS}
+    IAM_CLIENT_ID: ${opt:IAM_CLIENT_ID}
+    IAM_CLIENT_SECRET: ${opt:IAM_CLIENT_SECRET}
+    IAM_URL: ${opt:IAM_URL}
+    IAM_REALM: ${opt:IAM_REALM}
+    S3_ID_LIB: ${opt:S3_ID_LIB}
+    S3_KEY_LIB: ${opt:S3_KEY_LIB}
+    LOG_EVENT: Allow
+    BUCKET_NAME: ${opt:BUCKET_NAME}
+    GOOGLE_REPORT: ${opt:GOOGLE_REPORT}
+    GOOGLE_SHEET_CONFIG: ${opt:GOOGLE_SHEET_CONFIG}
+    PUBLIC_DOMAIN: ${opt:PUBLIC_DOMAIN}
+    FILE_STORE_CONFIG: ${opt:stage, self:custom.defaultStage}-config_payment_s3.json
+    PRODUCT: ${opt:PRODUCT}
+    NODE_ENV: ${opt:NODE_ENV}
+    NOTIFICATION_URL: ${opt:NOTIFICATION_URL}
+    SLACK_CALLBACK_URL: ${opt:SLACK_CALLBACK_URL}
+    FAIL_TRANSACTION_SLACK_CHANNEL: ${opt:FAIL_TRANSACTION_SLACK_CHANNEL}
+    SLACK_NOTI_URL: ${opt:SLACK_NOTI_URL}
+    SLACK_NOTI_CHANNEL: ${opt:SLACK_NOTI_CHANNEL}
+    SLACK_NOTI_TOKEN: ${opt:SLACK_NOTI_TOKEN}
+    BANK_HUB_SECURE_TOKEN: ${opt:BANK_HUB_SECURE_TOKEN}
+    BANK_HUB_API_KEY: ${opt:BANK_HUB_API_KEY}
+    SYNC_HOLDING_TIME: ${opt:SYNC_HOLDING_TIME}
+    REVENUE_SUB_SLACK_CHANNEL: ${opt:REVENUE_SUB_SLACK_CHANNEL}
+    REVENUE_SME_SLACK_CHANNEL: ${opt:REVENUE_SME_SLACK_CHANNEL}
+    REVENUE_ALL_SLACK_CHANNEL: ${opt:REVENUE_ALL_SLACK_CHANNEL}
+    REVENUE_SME_PROVIDERS: ${opt:REVENUE_SME_PROVIDERS}
+    GOOGLE_CLIENT_EMAIL: ${env:GOOGLE_CLIENT_EMAIL}
+    GOOGLE_CLIENT_PRIVATE_KEY: ${env:GOOGLE_CLIENT_PRIVATE_KEY}
+    REVENUE_REPORTS_SHEET_ID: ${env:REVENUE_REPORTS_SHEET_ID}
+    REVENUE_REPORTS_SHEET_NAME: ${env:REVENUE_REPORTS_SHEET_NAME}
+    PARTNER_REVENUE_SLACK_CHANNEL: ${env:PARTNER_REVENUE_SLACK_CHANNEL}
+    ICS_URL: ${env:ICS_URL}
+    APPLE_VERIFY_RECEIPT_URL: ${env:APPLE_VERIFY_RECEIPT_URL}
+    APPLE_VERIFY_RECEIPT_PASSWORD: ${env:APPLE_VERIFY_RECEIPT_PASSWORD}
+    IS_LOCK_APP_PAY: ${env:IS_LOCK_APP_PAY}
+    PAYMENT_HUB_V2_URL: ${env:PAYMENT_HUB_V2_URL}
+plugins:
+  - serverless-prune-plugin
+custom:
+  prune:
+    automatic: true
+    number: 3
+# plugins:
+#   - serverless-plugin-warmup
+# custom:
+#   warmup:
+#     default:
+#       enabled: true # Whether to warm up functions by default or not
+#       name: STATE_AWS-warmer-default
+#       events:
+#         - schedule: cron(0/2 0-23 ? * MON-SUN *) # Run WarmUp every 5 minutes Mon-Fri between 8:00am and 5:55pm (UTC)
+#       package:
+#         individually: true
+#         exclude: # exclude additional binaries that are included at the serverless package level
+#           - ../**
+#           - ../../**
+#         include:
+#           - ./**
+#       timeout: 20
+#       tracing: true
+#       prewarm: true # Run WarmUp immediately after a deploymentlambda
+#       concurrency: 2 # Warm up 5 concurrent instances
+
+#  region: us-east-1
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+#package:
+#  include:
+#    - include-me.js
+#    - include-me-dir/**
+#  exclude:
+#    - exclude-me.js
+#    - exclude-me-dir/**
+# package:
+#   individually: true
+
+functions:
+  create:
+    handler: handler.create
+    events:
+      - http:
+          path: api/create/{channel}
+          method: POST
+
+  user_redirect:
+    handler: handler.user_redirect
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/user/redirect/{token}
+          method: GET
+
+  twoCheckout_redirect:
+    handler: handler.twoCheckout_redirect
+    events:
+      - http:
+          path: api/2checkout/redirect/{token}
+          method: GET
+
+  vnpay_redirect:
+    handler: handler.vnpay_redirect
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/vnpay/redirect/{token}
+          method: GET
+
+  momopay_redirect:
+    handler: handler.momopay_redirect
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/momopay/redirect/{token}
+          method: GET
+  appstore_ipn:
+    handler: handler.appstore_ipn
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/appstore/ipn
+          method: POST
+
+  apple_ipn:
+    handler: handler.apple_ipn
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/apple/ipn
+          method: POST
+
+  momopay_ipn:
+    handler: handler.momopay_ipn
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/momopay/ipn
+          method: ANY
+
+  zalopay_ipn:
+    handler: handler.zalopay_ipn
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/zalopay/ipn
+          method: ANY
+  # bank_ipn:
+  #   handler: handler.bank_ipn
+    # warmup:
+    #   default:
+    #     enabled: false
+    # events:
+    #   - http:
+    #       path: api/bank/ipn
+    #       method: ANY
+  bank_hub_ipn:
+    handler: handler.bank_hub_ipn
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/bankHub/ipn
+          method: POST
+  vnpay_ipn:
+    handler: handler.vnpay_ipn
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/vnpay/ipn
+          method: ANY
+  twoCheckout_ipn:
+    handler: handler.twoCheckout_ipn
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/2checkout/ipn
+          method: ANY
+  zalopay_redirect:
+    handler: handler.zalopay_redirect
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/zalopay/redirect/{token}
+          method: GET
+
+  paypal_redirect:
+    handler: handler.paypal_redirect
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/paypal/redirect/{token}
+          method: GET
+
+  detail:
+    handler: handler.detail
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/provider/detail/{token}
+          method: GET
+
+  shopee_pay_ipn:
+    handler: handler.shopee_pay_ipn
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/provider/shopee_pay_ipn
+          method: ANY
+
+  # demo:
+  #   handler: handler.demo
+  #   # warmup:
+  #   #   default:
+  #   #     enabled: false
+  #   events:
+  #     - http:
+  #         path: api/demo
+  #         method: GET
+
+  # demo_provider_show:
+  #   handler: handler.demo_provider_show
+  #   # warmup:
+  #   #   default:
+  #   #     enabled: false
+  #   events:
+  #     - http:
+  #         path: api/provider/demo
+  #         method: GET
+  banks:
+    handler: handler.banks
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/banks
+          method: GET
+  tranfer_banks:
+    handler: handler.tranfer_banks
+    # warmup:
+    #   default:
+    #     enabled: false
+    events:
+      - http:
+          path: api/tranfer/banks
+          method: GET
+
+  # reload_config:
+  #   handler: handler.reload_config
+  #   # warmup:
+  #   #   default:
+  #   #     enabled: false
+  #   events:
+  #     - http:
+  #         path: api/reload/config
+  #         method: GET
+
+  confirm_transaction_by_provider:
+    handler: handler.confirmTransactionByProvider
+    events:
+      - http:
+          path: api/transactions/confirm-by-provider
+          method: POST
+
+  confirm_transaction_by_admin:
+    handler: handler.confirmTransactionByAdmin
+    events:
+      - http:
+          path: api/transactions/confirm-by-admin
+          method: POST
+
+  # confirm_transaction_by_customer:
+  #   handler: handler.confirmTransactionByCustomer
+  #   events:
+  #     - http:
+  #         path: api/transactions/confirm-by-customer
+  #         method: POST
+
+  get_transactions:
+    handler: handler.getTransactions
+    events:
+      - http:
+          path: api/transactions
+          method: GET
+          cors: true
+
+  # export_transactions_to_excel:
+  #   handler: handler.exportTransactionsToExcel
+  #   events:
+  #     - http:
+  #         path: api/transactions/export-excel
+  #         method: GET
+  #         cors: true
+
+  create_revenue_reports:
+    handler: handler.createRevenueReports
+    events:
+    - http:
+            path: api/revenue-reports
+            method: POST
+
+  create_reconcile_orders:
+    handler: handler.createReconcileOrders
+    events:
+    - http:
+            path: api/reconcile-orders
+            method: POST
+
+  # export_reconcile_orders_to_excel:
+  #   handler: handler.exportReconcileOrdersToExcel
+  #   events:
+  #     - http:
+  #         path: api/reconcile-orders/export-excel
+  #         method: GET
+  #         cors: true
+
+  get_reconcile_orders:
+    handler: handler.getReconcileOrders
+    events:
+      - http:
+          path: api/reconcile-orders
+          method: GET
+          cors: true
+
+  notify_reconcile_orders:
+    handler: handler.notifyReconcileOrders
+    events:
+      - http:
+          path: api/reconcile-orders/notify
+          method: POST
+  
+  notify_revenue_daily:
+    handler: handler.notifyRevenueDaily
+    events:
+      - schedule: cron(30 22 * * ? *)
+
+  notify_sub_revenue_daily:
+    handler: handler.notifySubRevenueDaily
+    events:
+      - schedule: cron(30 22 * * ? *)
+
+  notify_provider_revenue_daily:
+    handler: handler.notifyProviderRevenueDaily
+    events:
+      - schedule: cron(30 22 * * ? *)
+
+  notify_total_revenue_daily:
+    handler: handler.notifyTotalRevenueDaily
+    events:
+      - schedule: cron(30 22 * * ? *)
+
+  export_revenue_report_daily:
+    handler: handler.exportRevenueReports
+    events:
+      - schedule: cron(0 22 * * ? *)
+
+  notify_partner_revenue_daily:
+    handler: handler.notifyPartnerRevenueDaily
+    events:
+      - schedule: cron(30 22 * * ? *)
+  # get_revenue_by_transaction:
+  #   handler: handler.getRevenueByTransaction
+  #   events:
+  #     - http:
+  #         path: api/stats/transactions/total-revenue
+  #         method: GET
+  #         cors: true
+  
+  # stats_revenues_by_transaction:
+  #   handler: handler.statsRevenuesByTransaction
+  #   events:
+  #     - http:
+  #         path: api/stats/transactions/revenues
+  #         method: GET
+  #         cors: true
+          
+  # stats_revenues_by_date_by_transaction:
+  #   handler: handler.statsRevenuesByDateByTransaction
+  #   events:
+  #     - http:
+  #         path: api/stats/transactions/revenues-by-date
+  #         method: GET
+  #         cors: true
+  
+  # stats_revenues_by_reconcile_order:
+  #   handler: handler.statsRevenuesByReconcileOrder
+  #   events:
+  #     - http:
+  #         path: api/stats/reconcile-orders/revenues
+  #         method: GET
+  #         cors: true
+          
+  # stats_revenues_by_channel_date_reconcile_order:
+  #   handler: handler.statsRevenuesByChannelByDateByReconcileOrder
+  #   events:
+  #     - http:
+  #         path: api/stats/reconcile-orders/revenues-by-channel-by-date
+  #         method: GET
+  #         cors: true
+  get_config_entity_names:
+    handler: handler.getConfigEntityNames
+    events:
+      - http:
+          path: api/config-entity-names
+          method: GET
+          cors: true
+  # create_cost:
+  #   handler: handler.createCost
+  #   events:
+  #     - http:
+  #         path: api/costs
+  #         method: POST
+  # get_recheck_revenue:
+  #   handler: handler.getRecheckRevenue
+  #   events:
+  #     - http:
+  #         path: api/recheck-revenue
+  #         method: GET
+  #         cors: true
+  # recheck_revenue_daily:
+  #   handler: handler.recheckRevenueDaily
+  #   events:
+  #     - schedule: cron(0 0 * * ? *)
+  # recheck_revenue_monthly:
+  #   handler: handler.recheckRevenueMonthly
+  #   events:
+  #     - schedule: cron(0 0 1 * ? *)
+#    The following are a few example events you can configure
+#    NOTE: Please make sure to change your handler code to work with those events
+#    Check the event documentation for details
+#    events:
+#      - http:
+#          path: users/create
+#          method: get
+#      - websocket: $connect
+#      - s3: ${env:BUCKET}
+#      - schedule: rate(10 minutes)
+#      - sns: greeter-topic
+#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
+#      - alexaSkill: amzn1.ask.skill.xx-xx-xx-xx
+#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
+#      - iot:
+#          sql: "SELECT * FROM 'some_topic'"
+#      - cloudwatchEvent:
+#          event:
+#            source:
+#              - "aws.ec2"
+#            detail-type:
+#              - "EC2 Instance State-change Notification"
+#            detail:
+#              state:
+#                - pending
+#      - cloudwatchLog: '/aws/lambda/hello'
+#      - cognitoUserPool:
+#          pool: MyUserPool
+#          trigger: PreSignUp
+#      - alb:
+#          listenerArn: arn:aws:elasticloadbalancing:us-east-1:XXXXXX:listener/app/my-load-balancer/50dc6c495c0c9188/
+#          priority: 1
+#          conditions:
+#            host: example.com
+#            path: /hello
+
+#    Define function environment variables here
+#    environment:
+#      variable2: value2
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"

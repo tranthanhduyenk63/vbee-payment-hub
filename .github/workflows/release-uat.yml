@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-uat:
+    if: startsWith(github.ref, 'refs/tags/u')
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "The job was automatically triggered by a ${{ github.event_name }} event. Running on a ${{ runner.os }} server"
+    - run: echo "The branch name is ${{ github.ref }} and the repository is ${{ github.repository }}."
+
+    - name: Checkout 
+      uses: actions/checkout@v2
+  
+    - name: npm install dependencies
+      run: |
+        export NPM_TOKEN=${{ secrets.NPM_TOKEN }}
+        npm i --production
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.PAYMENT_S3_KEY }}
+        aws-secret-access-key: ${{ secrets.PAYMENT_S3_SCRET }}
+        aws-region: ${{ secrets.PAYMENT_PROD_AWS_REGION_SOUTHEAST_1 }}
+
+    - name: Install serverless-prune-plugin
+      run: npm install serverless-prune-plugin
+
+    - name: Deploy
+      uses: serverless/github-action@v1.53.0
+      with:
+          args: | 
+            deploy --stage uat --mongo ${{ secrets.PAYMENT_MONGO_UAT }} --IAM_VALID_CLIENT_IDS "acb" --IAM_CLIENT_ID "payment-hub" --IAM_CLIENT_SECRET ${{ secrets.PAYMENT_UAT_IAM_CLIENT_SECRET }} --IAM_URL ${{ secrets.PAYMENT_UAT_IAM_URL }} --IAM_REALM ${{ secrets.PAYMENT_UAT_IAM_REALM }} --S3_ID_LIB ${{ secrets.PAYMENT_UAT_S3_ID_LIB }} --S3_KEY_LIB ${{ secrets.PAYMENT_S3_SCRET }} --BUCKET_NAME ${{ secrets.PAYMENT_UAT_BUCKET_NAME }} --GOOGLE_REPORT ${{ secrets.PAYMENT_UAT_GOOGLE_REPORT }} --GOOGLE_SHEET_CONFIG ${{ secrets.PAYMENT_UAT_GOOGLE_SHEET_CONFIG }} --PUBLIC_DOMAIN ${{ secrets.PAYMENT_UAT_PUBLIC_DOMAIN }} --FILE_STORE_CONFIG ${{ secrets.PAYMENT_UAT_FILE_STORE_CONFIG }} --TELEGRAM_GROUP_RESULT ${{ secrets.PAYMENT_UAT_TELEGRAM_GROUP_RESULT }} --PRODUCT ${{ secrets.PAYMENT_UAT_PRODUCT }} --NODE_ENV "dev" --TELEGRAM_GROUP_REQUEST ${{ secrets.PAYMENT_UAT_TELEGRAM_GROUP_REQUEST }} --SLACK_NOTI_URL "https://uat.vbee.vn/api/v1/slack/send-message" --SLACK_NOTI_CHANNEL ${{ secrets.PAYMENT_UAT_SLACK_NOTI_CHANNEL }} --SLACK_NOTI_TOKEN ${{ secrets.PAYMENT_UAT_SLACK_NOTI_TOKEN }} --BANK_HUB_SECURE_TOKEN ${{ secrets.PAYMENT_PROD_BANK_HUB_SECURE_TOKEN }} --BANK_HUB_API_KEY ${{ secrets.BANK_HUB_API_KEY }} --REVENUE_SUB_SLACK_CHANNEL "C05A5FT365B" --REVENUE_SME_SLACK_CHANNEL "C05A5FT365B" --REVENUE_ALL_SLACK_CHANNEL "C05A5FT365B" --REVENUE_SME_PROVIDERS "vbee-mobifone,vbee-studio,aicc-cloud,aicc-mobifone,aicc-sacombank"
+            --prune
+      env:
+        GOOGLE_CLIENT_EMAIL: "payment-hub@payment-ggsheet.iam.gserviceaccount.com"
+        GOOGLE_CLIENT_PRIVATE_KEY: '${{ secrets.PAYMENT_PROD_GOOGLE_CLIENT_PRIVATE_KEY }}'
+        REVENUE_REPORTS_SHEET_ID: "1t_4c_qckpnkmrOtByEEanpZ1r6Ud3NSmqaoUQI6V6Qk"
+        REVENUE_REPORTS_SHEET_NAME: "TestUAT" 
+        PARTNER_REVENUE_SLACK_CHANNEL: "C05A5FT365B"
+        ICS_URL: "https://uat-ics.vbee.vn"
+        APPLE_VERIFY_RECEIPT_URL: "https://sandbox.itunes.apple.com/verifyReceipt"
+        APPLE_VERIFY_RECEIPT_PASSWORD: '${{ secrets.DEV_APPLE_VERIFY_RECEIPT_PASSWORD }}'
+        IS_LOCK_APP_PAY: 0
+        PAYMENT_HUB_V2_URL: "https://uat-payment.vbee.ai"
+        
+  build-prod:
+    if: startsWith(github.ref, 'refs/tags/p')
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "The job was automatically triggered by a ${{ github.event_name }} event. Running on a ${{ runner.os }} server"
+    - run: echo "The branch name is ${{ github.ref }} and the repository is ${{ github.repository }}."
+
+    - name: Checkout 
+      uses: actions/checkout@v2
+    - name: npm install dependencies
+      run: |
+        export NPM_TOKEN=${{ secrets.NPM_TOKEN }}
+        npm i --production
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.PAYMENT_S3_KEY }}
+        aws-secret-access-key: ${{ secrets.PAYMENT_S3_SCRET }}
+        aws-region: ${{ secrets.PAYMENT_PROD_AWS_REGION_SOUTHEAST_1 }}
+
+    - name: Install serverless-prune-plugin
+      run: npm install serverless-prune-plugin
+
+    - name: Deploy
+      uses: serverless/github-action@v1.53.0
+      with:
+        args: |
+          deploy --stage pay --mongo ${{ secrets.PAYMENT_MONGO_PROD }} --IAM_VALID_CLIENT_IDS "acb" --IAM_CLIENT_ID ${{ secrets.PAYMENT_PROD_IAM_CLIENT_ID }} --IAM_CLIENT_SECRET ${{ secrets.PAYMENT_PROD_IAM_CLIENT_SECRET }} --IAM_URL ${{ secrets.PAYMENT_PROD_IAM_URL }} --IAM_REALM ${{ secrets.PAYMENT_PROD_IAM_REALM }} --S3_ID_LIB ${{ secrets.PAYMENT_S3_KEY }} --S3_KEY_LIB ${{ secrets.PAYMENT_S3_SCRET }} --BUCKET_NAME ${{ secrets.PAYMENT_PROD_BUCKET_NAME }} --GOOGLE_REPORT ${{ secrets.PAYMENT_PROD_GOOGLE_REPORT }} --GOOGLE_SHEET_CONFIG ${{ secrets.PAYMENT_PROD_GOOGLE_SHEET_CONFIG }} --PUBLIC_DOMAIN ${{ secrets.PAYMENT_PROD_PUBLIC_DOMAIN }} --FILE_STORE_CONFIG ${{ secrets.PAYMENT_PROD_FILE_STORE_CONFIG }} --TELEGRAM_GROUP_RESULT ${{ secrets.PAYMENT_PROD_TELEGRAM_GROUP_RESULT }} --PRODUCT ${{ secrets.PAYMENT_PROD_PRODUCT }} --NODE_ENV "prod" --TELEGRAM_GROUP_REQUEST ${{ secrets.PAYMENT_PROD_TELEGRAM_GROUP_REQUEST }} --SLACK_NOTI_URL "https://vbee.vn/api/v1/slack/send-message" --SLACK_NOTI_CHANNEL ${{ secrets.PAYMENT_PROD_SLACK_NOTI_CHANNEL }} --SLACK_NOTI_TOKEN ${{ secrets.PAYMENT_PROD_SLACK_NOTI_TOKEN }} --BANK_HUB_SECURE_TOKEN ${{ secrets.PAYMENT_PROD_BANK_HUB_SECURE_TOKEN }} --BANK_HUB_API_KEY ${{ secrets.BANK_HUB_API_KEY }} --REVENUE_SUB_SLACK_CHANNEL "C04MU5WN6TX" --REVENUE_SME_SLACK_CHANNEL "C04MX3Z2FLJ" --REVENUE_ALL_SLACK_CHANNEL "C04PKH2NHJR" --REVENUE_SME_PROVIDERS "vbee-mobifone,vbee-studio,aicc-cloud,aicc-mobifone,aicc-sacombank"
+          --prune
+      env:
+        GOOGLE_CLIENT_EMAIL: "payment-hub@payment-ggsheet.iam.gserviceaccount.com"
+        GOOGLE_CLIENT_PRIVATE_KEY: '${{ secrets.PAYMENT_PROD_GOOGLE_CLIENT_PRIVATE_KEY }}'
+        REVENUE_REPORTS_SHEET_ID: "1yGJuDR_7k9-EDZdzZb7hdv-WM3WIgVAortbUy_K6z5I"
+        REVENUE_REPORTS_SHEET_NAME: "Data2" 
+        PARTNER_REVENUE_SLACK_CHANNEL: "C05062NC1QQ"
+        ICS_URL: "https://ics.vbee.vn"
+        APPLE_VERIFY_RECEIPT_URL: "https://buy.itunes.apple.com/verifyReceipt"
+        APPLE_VERIFY_RECEIPT_PASSWORD: '${{ secrets.PROD_APPLE_VERIFY_RECEIPT_PASSWORD }}'
+        IS_LOCK_APP_PAY: 0
+        PAYMENT_HUB_V2_URL: "https://payment.vbee.ai"

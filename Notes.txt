@@ -1,0 +1,32 @@
+1. order_id sẽ sinh dạng uuid
+2. Mỗi giao dịch sẽ là 1 file text json lưu vào s3 (thư mục không được xóa) /bucket/2021/08/01/aicc_user_id_uuid.txt
+	- Các provider khi sinh giao dịch thì sẽ có private_key
+	- Khi chạy redirect ở trình duyệt (provider phải add thêm access_token của user để mình có thể biết là user nào thanh toán)
+
+3. Các request của vnpay thì dùng redis incr của upstack để tăng id mà đảm bảo sẽ không bị trùng
+4. Đẩy report theo ngày lên google sheet để thống kê (có thể là full từng order nên xem phương án order thành công thì đẩy luôn hoặc đẩy từ đầu chỉ cần tìm theo UUID để update lại đúng cái id của row đó)
+5. Thông tin đối soát (các provider phải đẩy tạm tính theo ngày và đẩy đối soát cuối tháng)
+5. xuất đối soát có thể theo phương án 
+	- Đọc tất cả các file rồi lấy ra thông tin để tính đối soát
+	- Đọc từ google sheet xuống để đối soát
+	
+7. Link trả về khi tạo request sẽ là link redirect dàng xxx.com/token/process trong đó token là JWT chứa thông tin 
+	{yeah:2021,
+	month: 08,
+	day: 11,
+	provider: aicc,
+	uuid}
+	để từ các thông tin trên khi redirect mình sẽ đọc lại từ file để lấy link chuyển tiếp (Mục dích làm cái link redirct này là để mình sẽ lấy dược thông tin khách hàng dựa trên access_token của khách hàng trên trình duyệt)
+
+
+
+
+người dùng -> provider -> create_payment -> link_redirect -> người dùng (sử dụng trình duyệt) -> redirect đến vnpay -> redirect -> về aws -> redirect về provier -> trả về người dùng
+
+
+
+prod:
+  appName: "Serverless App"
+
+default:
+  

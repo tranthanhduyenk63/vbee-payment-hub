@@ -1,0 +1,131 @@
+const CHANNEL = {
+  VBEE: 'vbee',
+  AICC: 'aicc',
+  AICLIP: 'aiclip',
+};
+
+const PARTNER_NAME = {
+  PAYPAL: 'paypal',
+  VNPAY: 'vnpay',
+  MOMOPAY: 'momopay',
+  ZALOPAY: 'zalopay',
+  SHOPEE_PAY: 'shopeepay',
+  BANK: 'bank',
+  APP_STORE: 'appstore',
+  TWO_CHECKOUT: '2checkout',
+};
+
+const CONFIRM_TRANSACTION_BY = {
+  SYSTEM: 'SYSTEM',
+  PROVIDER: 'PROVIDER',
+  ADMIN: 'ADMIN',
+};
+
+const TRANSACTION_STATE = {
+  PROCESSING: 0,
+  SUCCESS: 1,
+  FAILED: 2,
+};
+
+const ROLES = {
+  CREATE_PAYMENT: 'create-payment',
+  VIEW_TRANSACTION: 'view-transaction',
+  RECONCILE: 'reconcile',
+  MANAGE_RECONCILE_ORDERS: 'manage-reconcile-orders',
+  MANAGE_TRANSACTIONS: 'manage-transactions',
+  VIEW_REVENUE: 'view-revenue',
+};
+
+const PAGINATION = {
+  LIMIT: 10,
+  OFFSET: 0,
+};
+
+const BATCH_SIZE = 10;
+
+const COST_TYPE = {
+  DAY: 'DAY',
+  WEEK: 'WEEK',
+  MONTH: 'MONTH',
+};
+
+const CURRENCY_UNIT = {
+  VND: 'VND',
+  USD: 'USD',
+};
+
+const TWO_CHECKOUT_STYLE = 'default62b2cc16e6e3d';
+
+const REPORT_TYPE = {
+  DAY: 'DAY',
+  MONTH: 'MONTH',
+};
+
+const PAY_TYPE = {
+  SUB: 'Sub',
+  PAYG: 'PAYG',
+};
+
+const PAY_TYPE_VIETNAMESE = {
+  [PAY_TYPE.SUB]: 'Trả trước',
+  [PAY_TYPE.PAYG]: 'Trả sau',
+};
+
+const VBEE_PRODUCT = {
+  AI_VOICE: 'AI-Voice',
+  SMART_IVR: 'Smart-IVR',
+  CALLBOT: 'Callbot',
+};
+
+const VBEE_PRODUCT_VIETNAMESE = {
+  [VBEE_PRODUCT.AI_VOICE]: 'TTS',
+  [VBEE_PRODUCT.SMART_IVR]: 'AICC',
+  [VBEE_PRODUCT.CALLBOT]: 'AICC',
+};
+
+const VBEE_SUB_PRODUCTS = {
+  AI_VOICE_SUB: 'AI-Voice-Sub',
+  AI_VOICE_SME_PAYG: 'AI-Voice-SME-PAYG',
+  AI_VOICE_MOBIFONE_PAYG: 'AI-Voice-Mobifone-PAYG',
+  SMART_IVR_SUB: 'Smart-IVR-Sub',
+  SMART_IVR_FE_PAYG: 'Smart-IVR-FE-PAYG',
+  SMART_IVR_MOMO_PAYG: 'Smart-IVR-Momo-PAYG',
+  SMART_IVR_MOBIFONE_PAYG: 'Smart-IVR-Mobifone-PAYG',
+  SMART_IVR_SME_PAYG: 'Smart-IVR-SME-PAYG',
+  SMART_IVR_SACOMBANK_PAYG: 'Smart-IVR-Sacombank-PAYG',
+  CALLBOT_FE_PAYG: 'Callbot-FE-PAYG',
+  CALLBOT_SME_PAYG: 'Callbot-SME-PAYG',
+  CALLBOT_SACOMBANK_PAYG: 'Callbot-Sacombank-PAYG',
+};
+
+const VBEE_SME_PRODUCTS = [
+  VBEE_SUB_PRODUCTS.AI_VOICE_SME_PAYG,
+  VBEE_SUB_PRODUCTS.SMART_IVR_SME_PAYG,
+  VBEE_SUB_PRODUCTS.CALLBOT_SME_PAYG,
+];
+
+const VBEE_SUBSCRIPTION_PRODUCTS = [
+  VBEE_SUB_PRODUCTS.AI_VOICE_SUB,
+  VBEE_SUB_PRODUCTS.SMART_IVR_SUB,
+];
+
+module.exports = {
+  CHANNEL,
+  PARTNER_NAME,
+  CONFIRM_TRANSACTION_BY,
+  TRANSACTION_STATE,
+  ROLES,
+  PAGINATION,
+  BATCH_SIZE,
+  COST_TYPE,
+  CURRENCY_UNIT,
+  TWO_CHECKOUT_STYLE,
+  REPORT_TYPE,
+  PAY_TYPE,
+  PAY_TYPE_VIETNAMESE,
+  VBEE_PRODUCT,
+  VBEE_PRODUCT_VIETNAMESE,
+  VBEE_SUB_PRODUCTS,
+  VBEE_SME_PRODUCTS,
+  VBEE_SUBSCRIPTION_PRODUCTS,
+};

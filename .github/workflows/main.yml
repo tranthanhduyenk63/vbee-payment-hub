@@ -1,0 +1,55 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  continuous-integration:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "The job was automatically triggered by a ${{ github.event_name }} event. Running on a ${{ runner.os }} server"
+    - run: echo "The branch name is ${{ github.ref }} and the repository is ${{ github.repository }}."
+    - env:
+        MY_CLIENT_ID: ${{ secrets.PAYMENT_S3_KEY }}
+      run: |
+        echo "MY_CLIENT_ID (***)    = ${MY_CLIENT_ID}"
+        echo "MY_CLIENT_ID (base64) = $(echo ${MY_CLIENT_ID} | base64)"
+        echo "Copy the above value, and then execute locally:"
+        echo "echo PASTE_HERE | base64 -D"
+
+    - name: Checkout 
+      uses: actions/checkout@v2
+  
+    - name: npm install dependencies
+      run: |
+        export NPM_TOKEN=${{ secrets.NPM_TOKEN }}
+        npm i --production
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ID_BUILD_PAYMENT }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_BUILD_PAYMENT }}
+        aws-region: ${{ secrets.PAYMENT_PROD_AWS_REGION_SOUTHEAST_1 }}
+    
+    - name: Install serverless-prune-plugin
+      run: npm install serverless-prune-plugin
+        
+    - name: Deploy
+      uses: serverless/github-action@v1.53.0
+      with:
+        args: |
+          deploy --stage dev --mongo ${{ secrets.PAYMENT_MONGO_DEV }} --IAM_VALID_CLIENT_IDS "acb" --IAM_CLIENT_ID ${{ secrets.PAYMENT_DEV_IAM_CLIENT_ID }} --IAM_CLIENT_SECRET ${{ secrets.PAYMENT_DEV_IAM_CLIENT_SECRET }} --IAM_URL ${{ secrets.PAYMENT_DEV_IAM_URL }} --IAM_REALM ${{ secrets.PAYMENT_DEV_IAM_REALM }} --S3_ID_LIB ${{ secrets.PAYMENT_S3_KEY }} --S3_KEY_LIB ${{ secrets.PAYMENT_S3_SCRET }} --BUCKET_NAME ${{ secrets.PAYMENT_UAT_BUCKET_NAME }} --GOOGLE_REPORT ${{ secrets.PAYMENT_UAT_GOOGLE_REPORT }} --GOOGLE_SHEET_CONFIG ${{ secrets.PAYMENT_UAT_GOOGLE_SHEET_CONFIG }} --PUBLIC_DOMAIN ${{ secrets.PAYMENT_UAT_PUBLIC_DOMAIN }} --FILE_STORE_CONFIG ${{ secrets.PAYMENT_UAT_FILE_STORE_CONFIG }} --TELEGRAM_GROUP_RESULT ${{ secrets.PAYMENT_UAT_TELEGRAM_GROUP_RESULT }} --PRODUCT ${{ secrets.PAYMENT_UAT_PRODUCT }} --NODE_ENV "dev" --TELEGRAM_GROUP_REQUEST ${{ secrets.PAYMENT_UAT_TELEGRAM_GROUP_REQUEST }} --SLACK_NOTI_URL "https://dev.vbee.vn/api/v1/slack/send-message" --SLACK_NOTI_CHANNEL ${{ secrets.PAYMENT_DEV_SLACK_NOTI_CHANNEL }} --SLACK_NOTI_TOKEN ${{ secrets.PAYMENT_DEV_SLACK_NOTI_TOKEN }} --BANK_HUB_SECURE_TOKEN ${{ secrets.PAYMENT_DEV_BANK_HUB_SECURE_TOKEN }} --BANK_HUB_API_KEY ${{ secrets.BANK_HUB_API_KEY }} --REVENUE_SUB_SLACK_CHANNEL "C04M9ELFZEK" --REVENUE_SME_SLACK_CHANNEL "C04MM301JMB" --REVENUE_ALL_SLACK_CHANNEL "C04NE45HTPS" --REVENUE_SME_PROVIDERS "vbee-mobifone,vbee-studio,aicc-cloud,aicc-mobifone,aicc-sacombank"
+          --prune
+      env:
+        GOOGLE_CLIENT_EMAIL: "payment-hub@payment-ggsheet.iam.gserviceaccount.com"
+        GOOGLE_CLIENT_PRIVATE_KEY: '${{ secrets.PAYMENT_DEV_GOOGLE_CLIENT_PRIVATE_KEY }}'
+        REVENUE_REPORTS_SHEET_ID: "1t_4c_qckpnkmrOtByEEanpZ1r6Ud3NSmqaoUQI6V6Qk"
+        REVENUE_REPORTS_SHEET_NAME: "Test" 
+        PARTNER_REVENUE_SLACK_CHANNEL: "C05062LBCCQ"
+        ICS_URL: "https://dev-ics.vbee.vn"    
+        APPLE_VERIFY_RECEIPT_URL: "https://sandbox.itunes.apple.com/verifyReceipt"
+        APPLE_VERIFY_RECEIPT_PASSWORD: '${{ secrets.DEV_APPLE_VERIFY_RECEIPT_PASSWORD }}'
+        IS_LOCK_APP_PAY: 0
+        PAYMENT_HUB_V2_URL: "https://dev-payment.vbee.ai"

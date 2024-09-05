@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+
+        content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width,height=device-height">
+  <meta name="theme-color" content="#152944">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <title>VBEE Payment Gateway</title>
+     
+
+      <style>
+      .loading-wrap-index {
+              display: flex;
+              flex-flow: column wrap;
+              justify-content: center;
+              align-items: center;
+              margin: 100px 0;
+              /* loading gif wrap */
+            }
+            .loading-wrap-index .loading-gif-wrap {
+              width: 145px;
+              height: 145px;
+              background-color: #7a8593;
+              display: flex;
+              flex-flow: column nowrap;
+              justify-content: center;
+              align-items: center;
+              border-radius: 4px;
+            }
+            .loading-wrap-index .loading-gif-wrap .loading-gif {
+              margin-top: 20px;
+              width: 40px;
+              image-rendering: initial;
+            }
+            .loading-wrap-index .loading-message {
+              margin-top: 20px;
+              text-align: center;
+              font-size: 13px;
+            }
+            .button {
+              background-color: #4CAF50; /* Green */
+              border: none;
+              color: white;
+              padding: 15px 32px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+            }
+      </style>
+</head>
+<body>
+<div id="root" class="notranslate">
+   
+  <div class="loading-wrap-index">
+    <div class="loading-gif-wrap">
+      <img id="image_qr_code" src="https://surfacecu.com.vn/wp-content/uploads/2020/05/surface-laptop-3-a1-1.jpg" alt="logo zalopay" class="logo-zalopay" style="
+    width: 150px;
+">
+    </div>
+    <div class="loading-message">
+      <p>Laptop Asus VivoBook</p>
+      <p>Giá Tiền: 50.000 VND</p>
+      <button class="button" style="width: 300px;" id="mua_1_san_pham">Thanh Toán qua ZaloPay</button><br/><br/>
+      <button class="button" style="width: 300px;" id="mua_2_san_pham">Ví MoMo</button><br/><br/>
+      <button class="button" style="width: 300px;" id="mua_3_san_pham">Thanh Toán qua VnPay</button><br/><br/>
+      <button class="button" style="width: 300px;" id="mua_4_san_pham">Thanh Toán qua Paypal</button><br/><br/>
+      <button class="button" style="width: 300px;" id="mua_5_san_pham">Chuyển khoản qua bank</button><br/><br/>
+      <button class="button" style="width: 300px;" id="mua_6_san_pham">Thanh toán qua ShopeePay</button><br/><br/>
+    </div>
+
+  </div>
+ 
+</div>
+</body>
+<script type="text/javascript">
+$(document).ready(function(){
+  var $idInterval = null;
+  $.ajaxSetup({
+    headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization':'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm92aWRlciI6ImFpY2MiLCJpYXQiOjE2Mjk1MzQyNTIsImV4cCI6MTYzODE3NDI1Mn0.exT7Oxbdl4g96j0fKMLGi7COHJATyQCwKinzzi0o6r6a7QbYqJl06rdVCJLUVxvMTiCrrgS5YjD-buIc14EkEA'
+        }
+    });
+
+    $("#mua_1_san_pham").click(function(){
+        $("#mua_1_san_pham").css('background-color','gray');
+
+        $("#mua_1_san_pham").html('<img src="https://sbgateway.zalopay.vn/build/image/loading.gif" style="width: 70px;" alt="loading" class="loading-gif">');
+
+          $.post("https://payment-sb.vbeecore.com/api/create/aicc",
+          JSON.stringify({"money":10000,
+        "type":"zalopay","bank_code":"NCB", 
+        "ipn_url":"https://payment-sb.vbeecore.com/api/provider/demo", 
+        "callback_url":"https://payment-sb.vbeecore.com/api/provider/demo",
+        "cert":"e44600c783de79bd1becb04cca92e02d0d3545f98df4a465d45cd66939622f73",
+         "desc":"Gói trả trước", "customer_id":"12"}),
+          function(jdata, status){
+            
+            console.log('create response', JSON.stringify(jdata));
+            if(jdata.error == 1){
+                alert(jdata.error_msg);
+            }else{
+                window.location.href = jdata.link;  
+            }
+            
+          });
+    });
+    $("#mua_2_san_pham").click(function(){
+        $("#mua_2_san_pham").css('background-color','gray');
+        $("#mua_2_san_pham").html('<img src="https://sbgateway.zalopay.vn/build/image/loading.gif" style="width: 70px;"  alt="loading" class="loading-gif">');
+          $.post("https://payment-sb.vbeecore.com/api/create/aicc",
+          JSON.stringify({"money":10000,
+        "type":"momopay","bank_code":"NCB", 
+        "ipn_url":"https://payment-sb.vbeecore.com/api/provider/demo", 
+        "callback_url":"https://payment-sb.vbeecore.com/api/provider/demo",
+        "cert":"0606d2a710cb91a8f8f9776403a63651c254534225ee9dad5fa551b037c3a1e0",
+         "desc":"Gói trả trước", "customer_id":"12"}),
+          function(jdata, status){
+            console.log('create response', JSON.stringify(jdata));
+            if(jdata.error == 1){
+                alert(jdata.error_msg);
+            }else{
+                window.location.href = jdata.link;  
+            }
+            
+          });
+    });
+    $("#mua_3_san_pham").click(function(){
+        $("#mua_3_san_pham").css('background-color','gray');
+        $("#mua_3_san_pham").html('<img src="https://sbgateway.zalopay.vn/build/image/loading.gif" style="width: 70px;"  alt="loading" class="loading-gif">');
+          $.post("https://payment-sb.vbeecore.com/api/create/aicc",
+          JSON.stringify({"money":10000,
+        "type":"atm","bank_code":"NCB", 
+        "ipn_url":"https://payment-sb.vbeecore.com/api/provider/demo", 
+        "callback_url":"https://payment-sb.vbeecore.com/api/provider/demo",
+        "cert":"cd16816a9b4f83507b79aff9f0caaa1e78b6a3ea708af3cad739e673c651a72f",
+         "desc":"Gói trả trước", "customer_id":"12"}),
+          function(jdata, status){
+            console.log('create response', JSON.stringify(jdata));
+            if(jdata.error == 1){
+                alert(jdata.error_msg);
+            }else{
+                window.location.href = jdata.link;  
+            }
+          });
+    });
+     $("#mua_4_san_pham").click(function(){
+        $("#mua_4_san_pham").css('background-color','gray');
+        $("#mua_4_san_pham").html('<img src="https://sbgateway.zalopay.vn/build/image/loading.gif" style="width: 70px;"  alt="loading" class="loading-gif">');
+          $.post("https://payment-sb.vbeecore.com/api/create/aicc",
+          JSON.stringify({"money":10000,
+        "type":"paypal","bank_code":"NCB", 
+        "ipn_url":"https://payment-sb.vbeecore.com/api/provider/demo", 
+        "callback_url":"https://payment-sb.vbeecore.com/api/provider/demo",
+        "cert":"5d98553cf8d79d65f236715b0d18129c0ce8914e21aa384b546e602f1303f850",
+         "desc":"Gói trả trước", "customer_id":"12"}),
+          function(jdata, status){
+            console.log('create response', JSON.stringify(jdata));
+            if(jdata.error == 1){
+                alert(jdata.error_msg);
+            }else{
+                window.location.href = jdata.link;  
+            }
+          });
+    });
+
+    $("#mua_5_san_pham").click(function(){
+        $("#mua_5_san_pham").css('background-color','gray');
+        $("#mua_5_san_pham").html('<img src="https://sbgateway.zalopay.vn/build/image/loading.gif" style="width: 70px;"  alt="loading" class="loading-gif">');
+          $.post("https://payment-sb.vbeecore.com/api/create/aicc",
+          JSON.stringify({"money":10000,
+        "type":"bank","bank_code":"22010002891416", 
+        "ipn_url":"https://payment-sb.vbeecore.com/api/provider/demo", 
+        "callback_url":"https://payment-sb.vbeecore.com/api/provider/demo",
+        "cert":"8a9f9a4d798bccf3bb3871b35716a60dcdffd3105a6d311ea2bf89fb1a595aa8",
+         "desc":"Gói trả trước", "customer_id":"12"}),
+          function(jdata, status){
+            console.log('create response', JSON.stringify(jdata));
+            if(jdata.error == 1){
+                alert(jdata.error_msg);
+            }else{
+                alert('Bạn vui lòng chuyển khoản đến tài khoản ' + jdata.bank_info.bank_name + ', Số tài khoản ' + jdata.bank_info.bank_number + ', Nội dung: ' + jdata.bank_info.code );
+            }
+            $("#mua_5_san_pham").css('background-color','#4CAF50');
+            $("#mua_5_san_pham").html('Chuyển khoản qua bank');
+            
+            
+
+          });
+    });
+    
+    $("#mua_6_san_pham").click(function(){
+        $("#mua_6_san_pham").css('background-color','gray');
+        $("#mua_6_san_pham").html('<img src="https://sbgateway.zalopay.vn/build/image/loading.gif" style="width: 70px;"  alt="loading" class="loading-gif">');
+          $.post("https://payment-sb.vbeecore.com/api/create/aicc",
+          JSON.stringify({"money":499000,"type":"shopeepay",
+              "callback_url":"https://api-beta.vface.ai/api/public/payment/redirect/2020","desc":"VFACE7",
+              "customer_id":872,"bank_code":"techcombank","ipn_url":"https://api-beta.vface.ai/api/public/payment/ipn/2020",
+              "provider_order_id":2020,"cert":"e7d7c2176699e865843a259bb325352d47b6bb087057de7599dceddc8c2033fb"}),
+          function(jdata, status){
+            console.log('create response', JSON.stringify(jdata));
+            if(jdata.error == 1){
+                alert(jdata.error_msg);
+            }else{
+              alert("Bạn vui lòng scan qr code để thanh toán");
+              $("#image_qr_code").attr('src',jdata.link);
+            }
+            //check state thanh toán
+            $idInterval = setInterval(()=>{
+                console.log('check status');
+                 $.get("https://payment-sb.vbeecore.com/api/detail/"+jdata.token, function(data, status){
+                    console.log(data);
+                  });
+            }, 1000);
+            // $("#mua_6_san_pham").css('background-color','#4CAF50');
+            // $("#mua_6_san_pham").html('Thanh toán qua ShopeePay');
+            
+            
+
+          });
+    });
+
+    
+
+});
+
+ 
+
+</script>
+</html><html>

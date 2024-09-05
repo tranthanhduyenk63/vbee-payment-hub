@@ -1,0 +1,66 @@
+require('dotenv').config();
+
+module.exports = {
+  MONGO_URI: process.env.MONGO_URI,
+  TOKEN_EXPIRED_IN: process.env.TOKEN_EXPIRED_IN || '10m',
+  IAM_CLIENT_ID: process.env.IAM_CLIENT_ID,
+  IAM_CLIENT_SECRET: process.env.IAM_CLIENT_SECRET,
+  IAM_VALID_CLIENT_IDS: process.env.IAM_VALID_CLIENT_IDS
+    ? process.env.IAM_VALID_CLIENT_IDS.split(',')
+    : [],
+  IAM_URL: process.env.IAM_URL,
+  IAM_REALM: process.env.IAM_REALM,
+  NODE_ENV: process.env.NODE_ENV || 'dev',
+  PRODUCT: process.env.PRODUCT || 'PAYMENT_HUB',
+  CURRENCY_EXCHANGE_RATES_URL:
+    'https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx',
+
+  BUCKET_NAME: process.env.BUCKET_NAME,
+
+  S3_ID_LIB: process.env.S3_ID_LIB,
+  S3_KEY_LIB: process.env.S3_KEY_LIB,
+  GOOGLE_REPORT: process.env.GOOGLE_REPORT,
+  PUBLIC_DOMAIN: process.env.PUBLIC_DOMAIN,
+
+  EMAIL_HOST: process.env.EMAIL_HOST,
+  EMAIL_PORT: process.env.EMAIL_PORT,
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+  EMAIL_TO: process.env.EMAIL_TO,
+
+  NOTIFICATION_URL: process.env.NOTIFICATION_URL,
+  SLACK_CALLBACK_URL: process.env.SLACK_CALLBACK_URL,
+  FAIL_TRANSACTION_SLACK_CHANNEL: process.env.FAIL_TRANSACTION_SLACK_CHANNEL,
+
+  SLACK_NOTI_URL: process.env.SLACK_NOTI_URL,
+  SLACK_NOTI_CHANNEL: process.env.SLACK_NOTI_CHANNEL,
+  SLACK_NOTI_TOKEN: process.env.SLACK_NOTI_TOKEN,
+
+  BANK_HUB_SECURE_TOKEN: process.env.BANK_HUB_SECURE_TOKEN,
+  BANK_HUB_API_KEY: process.env.BANK_HUB_API_KEY,
+  SYNC_HOLDING_TIME: parseInt(process.env.SYNC_HOLDING_TIME, 10) || 60, // seconds
+
+  REVENUE_SUB_SLACK_CHANNEL: process.env.REVENUE_SUB_SLACK_CHANNEL,
+  REVENUE_SME_SLACK_CHANNEL: process.env.REVENUE_SME_SLACK_CHANNEL,
+  REVENUE_ALL_SLACK_CHANNEL: process.env.REVENUE_ALL_SLACK_CHANNEL,
+  PARTNER_REVENUE_SLACK_CHANNEL: process.env.PARTNER_REVENUE_SLACK_CHANNEL,
+
+  REVENUE_SME_PROVIDERS: process.env.REVENUE_SME_PROVIDERS?.split(',') || [],
+
+  GOOGLE_CLIENT_EMAIL: process.env.GOOGLE_CLIENT_EMAIL,
+  GOOGLE_CLIENT_PRIVATE_KEY: process.env.GOOGLE_CLIENT_PRIVATE_KEY?.replace(
+    /\\\n/g,
+    '\n',
+  ),
+
+  REVENUE_REPORTS_SHEET_ID: process.env.REVENUE_REPORTS_SHEET_ID,
+  REVENUE_REPORTS_SHEET_NAME: process.env.REVENUE_REPORTS_SHEET_NAME,
+
+  ICS_URL: process.env.ICS_URL,
+
+  APPLE_VERIFY_RECEIPT_URL: process.env.APPLE_VERIFY_RECEIPT_URL,
+  APPLE_VERIFY_RECEIPT_PASSWORD: process.env.APPLE_VERIFY_RECEIPT_PASSWORD,
+  IS_LOCK_APP_PAY: parseInt(process.env.IS_LOCK_APP_PAY || 0, 10),
+
+  PAYMENT_HUB_V2_URL: process.env.PAYMENT_HUB_V2_URL,
+};
